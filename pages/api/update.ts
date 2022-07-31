@@ -9,7 +9,6 @@ export default async function handleUpdate(req: NextApiRequest, res: NextApiResp
       message: 'Method not allowed. Required method PUT'
     })
   }
-  console.log(req)
   try {
     const { user } = req.body
     const id = user.id

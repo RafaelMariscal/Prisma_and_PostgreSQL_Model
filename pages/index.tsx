@@ -1,10 +1,10 @@
 import Head from 'next/head'
-import { Button, Container, Divider, Form, Header, Icon, Image, Modal, Table } from 'semantic-ui-react'
-import pkg from "semantic-ui-react/package.json";
+import { Button, Container, Divider, Form, Header, Icon, Image, Table } from 'semantic-ui-react'
 import { Prisma } from '.prisma/client';
 import { fetcher } from '../utils/fetcher';
 import prisma from '../lib/prisma';
 import { useState } from 'react';
+import EditForm from '../components/EditForm';
 
 export async function getServerSideProps() {
   const users: Prisma.UserUncheckedCreateInput[] = await prisma.user.findMany()
@@ -30,7 +30,6 @@ export default function Home({ initialUsers }) {
   const [userToBeEdited, setUserToBeEdited] = useState<Prisma.UserUncheckedUpdateInput | Prisma.UserUncheckedCreateInput>({})
 
   const handleRoleChange = (e, { value }) => setRole(value)
-  const handleEditRoleChange = (e, { value }) => setUserToBeEdited({ ...userToBeEdited, role: value })
 
   const capitalizeFirsLetter = (s: string) => {
     if (typeof s !== "string") return ""
@@ -45,10 +44,6 @@ export default function Home({ initialUsers }) {
     setUserToBeEdited(user)
   }
 
-  function handleEditUser() {
-
-  }
-
   return (
     <>
       <Head>
@@ -58,7 +53,7 @@ export default function Home({ initialUsers }) {
       </Head>
       <Container style={isEditUserModalOn ? { opacity: "0.25" } : { margin: 20 }}>
         <Header as={"h3"}>
-          This is powered by NextJs, Semantic UI {pkg.version}
+          A NextJs | Prisma | Docker | PostgreSQL CRUD model
         </Header>
 
         <Form onSubmit={async () => {
@@ -189,69 +184,13 @@ export default function Home({ initialUsers }) {
           </Header>
 
           {userToBeEdited.id ? (
-            <Form >
-              <Form.Group widths="equal">
-
-                <Form.Input
-                  fluid
-                  label="First Name"
-                  placeholder="First Name"
-                  value={userToBeEdited.firstName}
-                  onChange={(e) => setUserToBeEdited({ ...userToBeEdited, firstName: e.target.value })}
-                /><br />
-                <Form.Input
-                  fluid
-                  label="Last Name"
-                  placeholder="Last Name"
-                  value={userToBeEdited.lastName}
-                  onChange={(e) => setUserToBeEdited({ ...userToBeEdited, lastName: e.target.value })}
-                /><br />
-
-                <Form.Input
-                  fluid
-                  label="Email"
-                  placeholder="Email"
-                  value={userToBeEdited.email}
-                  onChange={(e) => setUserToBeEdited({ ...userToBeEdited, email: e.target.value })}
-                /><br />
-                <Form.Input
-                  fluid
-                  label="Avatar"
-                  placeholder="Avatar"
-                  value={userToBeEdited.avatar}
-                  onChange={(e) => setUserToBeEdited({ ...userToBeEdited, avatar: e.target.value })}
-                /><br />
-                <Form.Select
-                  fluid
-                  label="Role"
-                  placeholder="Role"
-                  options={options}
-                  value={String(userToBeEdited.role)}
-                  onChange={handleEditRoleChange}
-                />
-              </Form.Group>
-
-              <Container style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
-                <Form.Button
-                  color='teal'
-                  onClick={toggleEditUserForm}
-                >Cancel</Form.Button>
-                <Form.Button
-                  color='blue'
-                  onClick={async () => {
-                    await fetcher("/api/update", "PUT", { user: userToBeEdited })
-                    const updatedUsersList = users.map(user => {
-                      if (user.id === userToBeEdited.id) {
-                        return user = userToBeEdited
-                      }
-                      return user
-                    })
-                    setUsers(updatedUsersList)
-                    toggleEditUserForm()
-                  }}
-                >Confirm Edit</Form.Button>
-              </Container>
-            </Form>
+            <EditForm
+              users={users}
+              setUsers={setUsers}
+              toggleEditUserForm={toggleEditUserForm}
+              setUserToBeEdited={setUserToBeEdited}
+              userToBeEdited={userToBeEdited}
+            />
           ) : ""}
 
         </Container>
