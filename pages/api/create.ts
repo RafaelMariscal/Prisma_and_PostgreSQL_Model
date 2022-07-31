@@ -9,7 +9,7 @@ export default async function handleCreate(req: NextApiRequest, res: NextApiResp
       message: 'Method not allowed'
     })
   }
-
+  console.log(req)
   try {
     const { user } = req.body
     const savedUser = await prisma.user.create({
