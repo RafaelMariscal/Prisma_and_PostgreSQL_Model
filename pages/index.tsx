@@ -40,6 +40,29 @@ export default function Home({ initialUsers }) {
     setIsEditUserModalOn(!isEditUserModalOn)
   }
 
+  async function handleCreateUser() {
+    const createFormValues = [firstName, lastName, email, avatar, role]
+    if (createFormValues.filter(Boolean).length < 5) {
+      return alert('All the camps needs to be filled.')
+    }
+
+    const body: Prisma.UserCreateInput = {
+      firstName,
+      lastName,
+      role,
+      email,
+      avatar
+    }
+
+    await fetcher("/api/create", "POST", { user: body, })
+    await setUsers([...users, body])
+    setFirstName("")
+    setLastName("")
+    setEmail("")
+    setAvatar("")
+    setRole(null)
+  }
+
   function populateEditUserForm(user: Prisma.UserUncheckedCreateInput) {
     setUserToBeEdited(user)
   }
@@ -56,26 +79,11 @@ export default function Home({ initialUsers }) {
           A NextJs | Prisma | Docker | PostgreSQL CRUD model
         </Header>
 
-        <Form onSubmit={async () => {
-          const body: Prisma.UserCreateInput = {
-            firstName,
-            lastName,
-            role,
-            email,
-            avatar
-          }
-
-          await fetcher("/api/create", "POST", { user: body, })
-          await setUsers([...users, body])
-          setFirstName("")
-          setLastName("")
-          setEmail("")
-          setAvatar("")
-          setRole(null)
-        }}>
+        <Form onSubmit={handleCreateUser}>
 
           <Form.Group widths="equal">
             <Form.Input
+              required
               fluid
               label="First Name"
               placeholder="First Name"
@@ -83,6 +91,7 @@ export default function Home({ initialUsers }) {
               onChange={(e) => setFirstName(e.target.value)}
             /><br />
             <Form.Input
+              required
               fluid
               label="Last Name"
               placeholder="Last Name"
@@ -91,13 +100,16 @@ export default function Home({ initialUsers }) {
             /><br />
 
             <Form.Input
+              required
               fluid
               label="Email"
               placeholder="Email"
+              type='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             /><br />
             <Form.Input
+              required
               fluid
               label="Avatar"
               placeholder="Avatar"
@@ -105,6 +117,7 @@ export default function Home({ initialUsers }) {
               onChange={(e) => setAvatar(e.target.value)}
             /><br />
             <Form.Select
+              required
               fluid
               label="Role"
               placeholder="Role"
@@ -113,7 +126,6 @@ export default function Home({ initialUsers }) {
               onChange={handleRoleChange}
             />
           </Form.Group>
-
           <Form.Button>Submit</Form.Button>
         </Form>
 

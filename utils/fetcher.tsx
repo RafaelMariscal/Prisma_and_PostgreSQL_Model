@@ -2,8 +2,10 @@ import { Prisma } from "@prisma/client"
 
 type Methods = "GET" | "POST" | "PUT" | "DELETE"
 
+export type User = Prisma.UserUncheckedCreateInput | Prisma.UserUncheckedUpdateInput
+
 type DataProps = {
-  user: Prisma.UserCreateInput
+  user: User
 }
 
 type fetcherProps = (url: string, method: Methods, data?) => void

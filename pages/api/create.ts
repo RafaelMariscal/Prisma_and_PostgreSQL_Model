@@ -17,6 +17,6 @@ export default async function handleCreate(req: NextApiRequest, res: NextApiResp
     res.status(200).json(savedUser)
   } catch (error) {
     res.status(400).json({ message: 'Something went wrong' })
+    console.error(error)
   }
-
 }
