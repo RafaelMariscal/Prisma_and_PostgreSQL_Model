@@ -14,7 +14,6 @@ interface EditFormProps {
   users: User[]
   userToBeEdited: User
 
-
   toggleEditUserForm: () => void
   setUserToBeEdited: (user: User) => void
   setUsers: (updatedUsersList: User[]) => void
@@ -25,8 +24,6 @@ const options = [
   { key: "u", text: "USER", value: "USER" },
   { key: "a", text: "ADMIN", value: "ADMIN" },
 ]
-
-
 
 function EditForm({ users, userToBeEdited, toggleEditUserForm, setUserToBeEdited, setUsers }: EditFormProps) {
 

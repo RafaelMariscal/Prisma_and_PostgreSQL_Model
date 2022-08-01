@@ -1,11 +1,9 @@
-import { Prisma } from '@prisma/client'
 import React from 'react'
 import { Header, Table, Image, Button, Icon } from 'semantic-ui-react'
 import { fetcher, User } from '../utils/fetcher'
 
 interface UsersTableProps {
   users: User[]
-
   setUserToBeEdited: (user: User) => void
   toggleEditUserForm: () => void
   setUsers: (users: User[]) => void
@@ -46,7 +44,7 @@ function UsersTable({ users, setUserToBeEdited, toggleEditUserForm, setUsers }: 
                 </Header>
               </Table.Cell>
               <Table.Cell>{String(user.email)}</Table.Cell>
-              <Table.Cell textAlign='center'>
+              <Table.Cell collapsing textAlign='center'>
                 <Button
                   animated="fade"
                   color='blue'

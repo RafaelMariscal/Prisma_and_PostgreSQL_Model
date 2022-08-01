@@ -1,11 +1,11 @@
 import Head from 'next/head'
-import { Button, Container, Divider, Form, Header, Icon, Image, Table } from 'semantic-ui-react'
+import { Container, Divider, Header } from 'semantic-ui-react'
 import { Prisma } from '.prisma/client';
-import { fetcher } from '../utils/fetcher';
 import prisma from '../lib/prisma';
 import { useState } from 'react';
 import EditForm from '../components/EditForm';
 import UsersTable from '../components/UsersTable';
+import AddUserForm from '../components/AddUserForm';
 
 export async function getServerSideProps() {
   const users: Prisma.UserUncheckedCreateInput[] = await prisma.user.findMany()
@@ -14,58 +14,13 @@ export async function getServerSideProps() {
   }
 }
 
-const options = [
-  { key: "m", text: "DEVELOPER", value: "DEVELOPER" },
-  { key: "u", text: "USER", value: "USER" },
-  { key: "a", text: "ADMIN", value: "ADMIN" },
-]
-
 export default function Home({ initialUsers }) {
   const [users, setUsers] = useState<Prisma.UserUncheckedUpdateInput[] | Prisma.UserUncheckedCreateInput[]>(initialUsers)
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [avatar, setAvatar] = useState("")
-  const [role, setRole] = useState()
   const [isEditUserModalOn, setIsEditUserModalOn] = useState(false)
   const [userToBeEdited, setUserToBeEdited] = useState<Prisma.UserUncheckedUpdateInput | Prisma.UserUncheckedCreateInput>({})
 
-  const handleRoleChange = (e, { value }) => setRole(value)
-
-  const capitalizeFirsLetter = (s: string) => {
-    if (typeof s !== "string") return ""
-    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
-  }
-
   function toggleEditUserForm() {
     setIsEditUserModalOn(!isEditUserModalOn)
-  }
-
-  async function handleCreateUser() {
-    const createFormValues = [firstName, lastName, email, avatar, role]
-    if (createFormValues.filter(Boolean).length < 5) {
-      return alert('All the camps needs to be filled.')
-    }
-
-    const body: Prisma.UserCreateInput = {
-      firstName,
-      lastName,
-      role,
-      email,
-      avatar
-    }
-
-    await fetcher("/api/create", "POST", { user: body, })
-    await setUsers([...users, body])
-    setFirstName("")
-    setLastName("")
-    setEmail("")
-    setAvatar("")
-    setRole(null)
-  }
-
-  function populateEditUserForm(user: Prisma.UserUncheckedCreateInput) {
-    setUserToBeEdited(user)
   }
 
   return (
@@ -84,55 +39,7 @@ export default function Home({ initialUsers }) {
           Add a New User:
         </Header>
 
-        <Form onSubmit={handleCreateUser} style={{ textAlign: "end" }}>
-
-          <Form.Group widths="equal" style={{ textAlign: "start" }}>
-            <Form.Input
-              required
-              fluid
-              label="First Name"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            /><br />
-            <Form.Input
-              required
-              fluid
-              label="Last Name"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            /><br />
-
-            <Form.Input
-              required
-              fluid
-              label="Email"
-              placeholder="Email"
-              type='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            /><br />
-            <Form.Input
-              required
-              fluid
-              label="Avatar"
-              placeholder="Avatar"
-              value={avatar}
-              onChange={(e) => setAvatar(e.target.value)}
-            /><br />
-            <Form.Select
-              required
-              fluid
-              label="Role"
-              placeholder="Role"
-              options={options}
-              value={role}
-              onChange={handleRoleChange}
-            />
-          </Form.Group>
-          <Form.Button color='teal'>Submit</Form.Button>
-        </Form>
+        <AddUserForm users={users} setUsers={setUsers} />
 
         <Divider horizontal>Users</Divider>
 
